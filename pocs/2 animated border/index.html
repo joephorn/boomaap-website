@@ -3,22 +3,20 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>POC 2 - Random Zigzag Border</title>
+    <title>POC 2 - Border</title>
     <style>
       :root {
         --border: 15px;
-        --stripe: 100px;
+        --stripe: 200px;
+        --stripe-x: var(--stripe);
+        --stripe-y: var(--stripe);
         --depth-min: 2px;
         --depth-max: 6px;
         --segment-min: 20px;
         --segment-max: 80px;
-        --c1: #ff5e5b;
-        --c2: #4ecdc4;
+        --c1: #00412D;
+        --c2: #FFC314;
         --bg: #fff;
-      }
-
-      * {
-        box-sizing: border-box;
       }
 
       html,
@@ -43,9 +41,9 @@
         background: repeating-linear-gradient(
           90deg,
           var(--c1) 0,
-          var(--c1) calc(var(--stripe) / 2),
-          var(--c2) calc(var(--stripe) / 2),
-          var(--c2) var(--stripe)
+          var(--c1) calc(var(--stripe-x) / 2),
+          var(--c2) calc(var(--stripe-x) / 2),
+          var(--c2) var(--stripe-x)
         );
       }
 
@@ -55,6 +53,7 @@
 
       .bottom {
         bottom: 0;
+        background-position: calc(var(--stripe-x) / 2) 0;
       }
 
       .left,
@@ -65,9 +64,9 @@
         background: repeating-linear-gradient(
           180deg,
           var(--c1) 0,
-          var(--c1) calc(var(--stripe) / 2),
-          var(--c2) calc(var(--stripe) / 2),
-          var(--c2) var(--stripe)
+          var(--c1) calc(var(--stripe-y) / 2),
+          var(--c2) calc(var(--stripe-y) / 2),
+          var(--c2) var(--stripe-y)
         );
       }
 
@@ -77,6 +76,7 @@
 
       .right {
         right: 0;
+        background-position: 0 calc(var(--stripe-y) / 2);
       }
     </style>
   </head>
@@ -175,6 +175,7 @@
 
       const applyRandomBorder = () => {
         const border = readVar("--border");
+        const stripeTarget = readVar("--stripe") || 24;
         const minSeg = readVar("--segment-min");
         const maxSeg = readVar("--segment-max");
         const minDepth = readVar("--depth-min");
@@ -182,6 +183,16 @@
         const width = window.innerWidth;
         const height = window.innerHeight;
         const sideHeight = border + maxDepth;
+        const halfTarget = stripeTarget / 2;
+        const segmentsXBase = Math.max(2, Math.round(width / halfTarget));
+        const segmentsYBase = Math.max(2, Math.round(height / halfTarget));
+        const segmentsX = segmentsXBase % 2 === 0 ? segmentsXBase : segmentsXBase + 1;
+        const segmentsY = segmentsYBase % 2 === 0 ? segmentsYBase : segmentsYBase + 1;
+        const stripeX = (width / segmentsX) * 2;
+        const stripeY = (height / segmentsY) * 2;
+
+        root.style.setProperty("--stripe-x", `${stripeX}px`);
+        root.style.setProperty("--stripe-y", `${stripeY}px`);
 
         topSide.style.clipPath = buildTop(width, border, minSeg, maxSeg, minDepth, maxDepth);
         bottomSide.style.clipPath = buildBottom(
