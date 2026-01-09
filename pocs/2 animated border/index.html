@@ -3,15 +3,18 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>POC 2 - Animated Border</title>
+    <title>POC 2 - Random Zigzag Border</title>
     <style>
       :root {
-        --border: 20px;
-        --stripe: 24px;
-        --shift: calc(var(--stripe) / 2);
+        --border: 15px;
+        --stripe: 100px;
+        --depth-min: 2px;
+        --depth-max: 6px;
+        --segment-min: 20px;
+        --segment-max: 80px;
         --c1: #ff5e5b;
         --c2: #4ecdc4;
-        --bg: #111;
+        --bg: #fff;
       }
 
       * {
@@ -27,37 +30,176 @@
         background: var(--bg);
       }
 
-      .frame {
+      .side {
         position: fixed;
-        inset: 0;
-        border: var(--border) solid transparent;
-        background:
-          linear-gradient(var(--bg), var(--bg)) padding-box,
-          repeating-linear-gradient(
-              90deg,
-              var(--c1) 0,
-              var(--c1) calc(var(--stripe) / 2),
-              var(--c2) calc(var(--stripe) / 2),
-              var(--c2) var(--stripe)
-            )
-            border-box;
-        animation: stripeSwap 1s steps(1) infinite;
         pointer-events: none;
       }
 
-      @keyframes stripeSwap {
-        0%,
-        49% {
-          background-position: 0 0, 0 0;
-        }
-        50%,
-        100% {
-          background-position: 0 0, var(--shift) 0;
-        }
+      .top,
+      .bottom {
+        left: 0;
+        right: 0;
+        height: calc(var(--border) + var(--depth-max));
+        background: repeating-linear-gradient(
+          90deg,
+          var(--c1) 0,
+          var(--c1) calc(var(--stripe) / 2),
+          var(--c2) calc(var(--stripe) / 2),
+          var(--c2) var(--stripe)
+        );
+      }
+
+      .top {
+        top: 0;
+      }
+
+      .bottom {
+        bottom: 0;
+      }
+
+      .left,
+      .right {
+        top: 0;
+        bottom: 0;
+        width: calc(var(--border) + var(--depth-max));
+        background: repeating-linear-gradient(
+          180deg,
+          var(--c1) 0,
+          var(--c1) calc(var(--stripe) / 2),
+          var(--c2) calc(var(--stripe) / 2),
+          var(--c2) var(--stripe)
+        );
+      }
+
+      .left {
+        left: 0;
+      }
+
+      .right {
+        right: 0;
       }
     </style>
   </head>
   <body>
-    <div class="frame" aria-hidden="true"></div>
+    <div class="side top"></div>
+    <div class="side right"></div>
+    <div class="side bottom"></div>
+    <div class="side left"></div>
+
+    <script>
+      const root = document.documentElement;
+      const topSide = document.querySelector(".top");
+      const rightSide = document.querySelector(".right");
+      const bottomSide = document.querySelector(".bottom");
+      const leftSide = document.querySelector(".left");
+
+      const readVar = (name) => {
+        const value = getComputedStyle(root).getPropertyValue(name);
+        return Number.parseFloat(value) || 0;
+      };
+
+      const rand = (min, max) => Math.random() * (max - min) + min;
+
+      const toPolygon = (points) =>
+        `polygon(${points.map(([x, y]) => `${x}px ${y}px`).join(", ")})`;
+
+      const buildTop = (width, border, minSeg, maxSeg, minDepth, maxDepth) => {
+        const points = [
+          [0, 0],
+          [width, 0]
+        ];
+        let x = width;
+        while (x > 0) {
+          points.push([x, border + rand(minDepth, maxDepth)]);
+          x = Math.max(0, x - rand(minSeg, maxSeg));
+        }
+        if (points[points.length - 1][0] !== 0) {
+          points.push([0, border + rand(minDepth, maxDepth)]);
+        }
+        points.push([0, 0]);
+        return toPolygon(points);
+      };
+
+      const buildBottom = (width, height, minSeg, maxSeg, minDepth, maxDepth) => {
+        const points = [
+          [0, height],
+          [width, height]
+        ];
+        let x = width;
+        while (x > 0) {
+          points.push([x, rand(minDepth, maxDepth)]);
+          x = Math.max(0, x - rand(minSeg, maxSeg));
+        }
+        if (points[points.length - 1][0] !== 0) {
+          points.push([0, rand(minDepth, maxDepth)]);
+        }
+        points.push([0, height]);
+        return toPolygon(points);
+      };
+
+      const buildLeft = (height, border, minSeg, maxSeg, minDepth, maxDepth) => {
+        const width = border + maxDepth;
+        const points = [
+          [0, 0],
+          [width, 0]
+        ];
+        let y = 0;
+        while (y < height) {
+          points.push([border + rand(minDepth, maxDepth), y]);
+          y = Math.min(height, y + rand(minSeg, maxSeg));
+        }
+        if (points[points.length - 1][1] !== height) {
+          points.push([border + rand(minDepth, maxDepth), height]);
+        }
+        points.push([0, height], [0, 0]);
+        return toPolygon(points);
+      };
+
+      const buildRight = (height, border, minSeg, maxSeg, minDepth, maxDepth) => {
+        const width = border + maxDepth;
+        const points = [
+          [width, 0],
+          [0, 0]
+        ];
+        let y = 0;
+        while (y < height) {
+          points.push([rand(minDepth, maxDepth), y]);
+          y = Math.min(height, y + rand(minSeg, maxSeg));
+        }
+        if (points[points.length - 1][1] !== height) {
+          points.push([rand(minDepth, maxDepth), height]);
+        }
+        points.push([width, height], [width, 0]);
+        return toPolygon(points);
+      };
+
+      const applyRandomBorder = () => {
+        const border = readVar("--border");
+        const minSeg = readVar("--segment-min");
+        const maxSeg = readVar("--segment-max");
+        const minDepth = readVar("--depth-min");
+        const maxDepth = readVar("--depth-max");
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        const sideHeight = border + maxDepth;
+
+        topSide.style.clipPath = buildTop(width, border, minSeg, maxSeg, minDepth, maxDepth);
+        bottomSide.style.clipPath = buildBottom(
+          width,
+          sideHeight,
+          minSeg,
+          maxSeg,
+          minDepth,
+          maxDepth
+        );
+        leftSide.style.clipPath = buildLeft(height, border, minSeg, maxSeg, minDepth, maxDepth);
+        rightSide.style.clipPath = buildRight(height, border, minSeg, maxSeg, minDepth, maxDepth);
+      };
+
+      applyRandomBorder();
+      window.addEventListener("resize", () => {
+        requestAnimationFrame(applyRandomBorder);
+      });
+    </script>
   </body>
 </html>
