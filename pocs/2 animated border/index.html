@@ -10,6 +10,7 @@
         --stripe: 200px;
         --stripe-x: var(--stripe);
         --stripe-y: var(--stripe);
+        --anim: 1s;
         --depth-min: 2px;
         --depth-max: 6px;
         --segment-min: 20px;
@@ -175,7 +176,7 @@
 
       const applyRandomBorder = () => {
         const border = readVar("--border");
-        const stripeTarget = readVar("--stripe") || 24;
+        const stripeTarget = readVar("--stripe");
         const minSeg = readVar("--segment-min");
         const maxSeg = readVar("--segment-max");
         const minDepth = readVar("--depth-min");
@@ -208,6 +209,33 @@
       };
 
       applyRandomBorder();
+      const parseDuration = (value) => {
+        const trimmed = value.trim();
+        if (trimmed.endsWith("ms")) {
+          return Number.parseFloat(trimmed) || 0;
+        }
+        if (trimmed.endsWith("s")) {
+          return (Number.parseFloat(trimmed) || 0) * 1000;
+        }
+        return Number.parseFloat(trimmed) || 0;
+      };
+
+      const startColorSwap = () => {
+        const duration = parseDuration(getComputedStyle(root).getPropertyValue("--anim"));
+        if (!duration) {
+          return;
+        }
+        const baseC1 = getComputedStyle(root).getPropertyValue("--c1").trim();
+        const baseC2 = getComputedStyle(root).getPropertyValue("--c2").trim();
+        let flipped = false;
+        setInterval(() => {
+          flipped = !flipped;
+          root.style.setProperty("--c1", flipped ? baseC2 : baseC1);
+          root.style.setProperty("--c2", flipped ? baseC1 : baseC2);
+        }, duration);
+      };
+
+      startColorSwap();
       window.addEventListener("resize", () => {
         requestAnimationFrame(applyRandomBorder);
       });
