@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>POC 2 - Animated Border</title>
+    <style>
+      :root {
+        --border: 20px;
+        --stripe: 24px;
+        --shift: calc(var(--stripe) / 2);
+        --c1: #ff5e5b;
+        --c2: #4ecdc4;
+        --bg: #111;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        background: var(--bg);
+      }
+
+      .frame {
+        position: fixed;
+        inset: 0;
+        border: var(--border) solid transparent;
+        background:
+          linear-gradient(var(--bg), var(--bg)) padding-box,
+          repeating-linear-gradient(
+              90deg,
+              var(--c1) 0,
+              var(--c1) calc(var(--stripe) / 2),
+              var(--c2) calc(var(--stripe) / 2),
+              var(--c2) var(--stripe)
+            )
+            border-box;
+        animation: stripeSwap 1s steps(1) infinite;
+        pointer-events: none;
+      }
+
+      @keyframes stripeSwap {
+        0%,
+        49% {
+          background-position: 0 0, 0 0;
+        }
+        50%,
+        100% {
+          background-position: 0 0, var(--shift) 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="frame" aria-hidden="true"></div>
+  </body>
+</html>
