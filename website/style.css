@@ -6,13 +6,13 @@ body {
   overflow: hidden;
 }
 
-#poc1-stage {
+.container {
   position: relative;
   width: 100vw;
   height: 100vh;
 }
 
-#poc1-stage .layer {
+.container .layer {
   position: absolute;
   inset: 0;
   background-size: cover;

@@ -10,7 +10,7 @@
         --stripe: 200px;
         --stripe-x: var(--stripe);
         --stripe-y: var(--stripe);
-        --anim: 1s;
+        --anim: 0.5s;
         --depth-min: 2px;
         --depth-max: 6px;
         --segment-min: 20px;
@@ -46,15 +46,19 @@
           var(--c2) calc(var(--stripe-x) / 2),
           var(--c2) var(--stripe-x)
         );
+        --base-x: 0px;
+        background-position: var(--base-x) 0;
       }
 
       .top {
         top: 0;
+        animation: stepXForward calc(var(--anim) * 4) steps(4) infinite;
       }
 
       .bottom {
         bottom: 0;
-        background-position: calc(var(--stripe-x) / 2) 0;
+        --base-x: calc(var(--stripe-x) / 2);
+        animation: stepXBackward calc(var(--anim) * 4) steps(4) infinite;
       }
 
       .left,
@@ -69,15 +73,55 @@
           var(--c2) calc(var(--stripe-y) / 2),
           var(--c2) var(--stripe-y)
         );
+        --base-y: 0px;
+        background-position: 0 var(--base-y);
       }
 
       .left {
         left: 0;
+        animation: stepYBackward calc(var(--anim) * 4) steps(4) infinite;
       }
 
       .right {
         right: 0;
-        background-position: 0 calc(var(--stripe-y) / 2);
+        --base-y: calc(var(--stripe-y) / 2);
+        animation: stepYForward calc(var(--anim) * 4) steps(4) infinite;
+      }
+
+      @keyframes stepXForward {
+        from {
+          background-position: var(--base-x) 0;
+        }
+        to {
+          background-position: calc(var(--base-x) + var(--stripe-x)) 0;
+        }
+      }
+
+      @keyframes stepXBackward {
+        from {
+          background-position: var(--base-x) 0;
+        }
+        to {
+          background-position: calc(var(--base-x) - var(--stripe-x)) 0;
+        }
+      }
+
+      @keyframes stepYForward {
+        from {
+          background-position: 0 var(--base-y);
+        }
+        to {
+          background-position: 0 calc(var(--base-y) + var(--stripe-y));
+        }
+      }
+
+      @keyframes stepYBackward {
+        from {
+          background-position: 0 var(--base-y);
+        }
+        to {
+          background-position: 0 calc(var(--base-y) - var(--stripe-y));
+        }
       }
     </style>
   </head>
@@ -104,73 +148,44 @@
       const toPolygon = (points) =>
         `polygon(${points.map(([x, y]) => `${x}px ${y}px`).join(", ")})`;
 
-      const buildTop = (width, border, minSeg, maxSeg, minDepth, maxDepth) => {
-        const points = [
-          [0, 0],
-          [width, 0]
-        ];
-        let x = width;
-        while (x > 0) {
-          points.push([x, border + rand(minDepth, maxDepth)]);
-          x = Math.max(0, x - rand(minSeg, maxSeg));
-        }
-        if (points[points.length - 1][0] !== 0) {
-          points.push([0, border + rand(minDepth, maxDepth)]);
-        }
-        points.push([0, 0]);
-        return toPolygon(points);
-      };
+      const buildSide = (side, length, band, border, minSeg, maxSeg, minDepth, maxDepth) => {
+        const isHorizontal = side === "top" || side === "bottom";
+        const usesBorder = side === "top" || side === "left";
+        const innerBase = usesBorder ? border : 0;
 
-      const buildBottom = (width, height, minSeg, maxSeg, minDepth, maxDepth) => {
-        const points = [
-          [0, height],
-          [width, height]
-        ];
-        let x = width;
-        while (x > 0) {
-          points.push([x, rand(minDepth, maxDepth)]);
-          x = Math.max(0, x - rand(minSeg, maxSeg));
+        if (isHorizontal) {
+          const outerY = side === "top" ? 0 : band;
+          const points = [
+            [0, outerY],
+            [length, outerY]
+          ];
+          let pos = length;
+          while (pos > 0) {
+            points.push([pos, innerBase + rand(minDepth, maxDepth)]);
+            pos = Math.max(0, pos - rand(minSeg, maxSeg));
+          }
+          if (points[points.length - 1][0] !== 0) {
+            points.push([0, innerBase + rand(minDepth, maxDepth)]);
+          }
+          points.push([0, outerY]);
+          return toPolygon(points);
         }
-        if (points[points.length - 1][0] !== 0) {
-          points.push([0, rand(minDepth, maxDepth)]);
-        }
-        points.push([0, height]);
-        return toPolygon(points);
-      };
 
-      const buildLeft = (height, border, minSeg, maxSeg, minDepth, maxDepth) => {
-        const width = border + maxDepth;
+        const outerX = side === "left" ? 0 : band;
+        const innerStart = side === "left" ? band : 0;
         const points = [
-          [0, 0],
-          [width, 0]
+          [outerX, 0],
+          [innerStart, 0]
         ];
-        let y = 0;
-        while (y < height) {
-          points.push([border + rand(minDepth, maxDepth), y]);
-          y = Math.min(height, y + rand(minSeg, maxSeg));
+        let pos = 0;
+        while (pos < length) {
+          points.push([innerBase + rand(minDepth, maxDepth), pos]);
+          pos = Math.min(length, pos + rand(minSeg, maxSeg));
         }
-        if (points[points.length - 1][1] !== height) {
-          points.push([border + rand(minDepth, maxDepth), height]);
+        if (points[points.length - 1][1] !== length) {
+          points.push([innerBase + rand(minDepth, maxDepth), length]);
         }
-        points.push([0, height], [0, 0]);
-        return toPolygon(points);
-      };
-
-      const buildRight = (height, border, minSeg, maxSeg, minDepth, maxDepth) => {
-        const width = border + maxDepth;
-        const points = [
-          [width, 0],
-          [0, 0]
-        ];
-        let y = 0;
-        while (y < height) {
-          points.push([rand(minDepth, maxDepth), y]);
-          y = Math.min(height, y + rand(minSeg, maxSeg));
-        }
-        if (points[points.length - 1][1] !== height) {
-          points.push([rand(minDepth, maxDepth), height]);
-        }
-        points.push([width, height], [width, 0]);
+        points.push([outerX, length], [outerX, 0]);
         return toPolygon(points);
       };
 
@@ -195,47 +210,49 @@
         root.style.setProperty("--stripe-x", `${stripeX}px`);
         root.style.setProperty("--stripe-y", `${stripeY}px`);
 
-        topSide.style.clipPath = buildTop(width, border, minSeg, maxSeg, minDepth, maxDepth);
-        bottomSide.style.clipPath = buildBottom(
+        topSide.style.clipPath = buildSide(
+          "top",
           width,
           sideHeight,
+          border,
           minSeg,
           maxSeg,
           minDepth,
           maxDepth
         );
-        leftSide.style.clipPath = buildLeft(height, border, minSeg, maxSeg, minDepth, maxDepth);
-        rightSide.style.clipPath = buildRight(height, border, minSeg, maxSeg, minDepth, maxDepth);
+        bottomSide.style.clipPath = buildSide(
+          "bottom",
+          width,
+          sideHeight,
+          border,
+          minSeg,
+          maxSeg,
+          minDepth,
+          maxDepth
+        );
+        leftSide.style.clipPath = buildSide(
+          "left",
+          height,
+          sideHeight,
+          border,
+          minSeg,
+          maxSeg,
+          minDepth,
+          maxDepth
+        );
+        rightSide.style.clipPath = buildSide(
+          "right",
+          height,
+          sideHeight,
+          border,
+          minSeg,
+          maxSeg,
+          minDepth,
+          maxDepth
+        );
       };
 
       applyRandomBorder();
-      const parseDuration = (value) => {
-        const trimmed = value.trim();
-        if (trimmed.endsWith("ms")) {
-          return Number.parseFloat(trimmed) || 0;
-        }
-        if (trimmed.endsWith("s")) {
-          return (Number.parseFloat(trimmed) || 0) * 1000;
-        }
-        return Number.parseFloat(trimmed) || 0;
-      };
-
-      const startColorSwap = () => {
-        const duration = parseDuration(getComputedStyle(root).getPropertyValue("--anim"));
-        if (!duration) {
-          return;
-        }
-        const baseC1 = getComputedStyle(root).getPropertyValue("--c1").trim();
-        const baseC2 = getComputedStyle(root).getPropertyValue("--c2").trim();
-        let flipped = false;
-        setInterval(() => {
-          flipped = !flipped;
-          root.style.setProperty("--c1", flipped ? baseC2 : baseC1);
-          root.style.setProperty("--c2", flipped ? baseC1 : baseC2);
-        }, duration);
-      };
-
-      startColorSwap();
       window.addEventListener("resize", () => {
         requestAnimationFrame(applyRandomBorder);
       });

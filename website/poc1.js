@@ -6,7 +6,7 @@ const images = [
   "assets/beeld5.jpg"
 ];
 
-const stage = document.getElementById("poc1-stage");
+const stage = document.querySelector(".container");
 const layerA = document.createElement("div");
 const layerB = document.createElement("div");
 
