@@ -138,10 +138,10 @@ const drawStripes = (phase) => {
   const startBottom = width + height;
   const startLeft = width + height + width;
 
-  drawSide("top", width, startTop, phase);
   drawSide("right", height, startRight, phase);
-  drawSide("bottom", width, startBottom, phase);
   drawSide("left", height, startLeft, phase);
+  drawSide("top", width, startTop, phase);
+  drawSide("bottom", width, startBottom, phase);
 };
 
 const drawMask = () => {
