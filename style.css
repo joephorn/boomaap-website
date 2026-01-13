@@ -53,12 +53,7 @@ body {
 }
 
 .carousel__layer.is-active {
-<<<<<<< HEAD
   opacity: 0.8;
-  opacity: 0.8;
-=======
-  opacity: 1;
->>>>>>> parent of 123285c (v2)
 }
 
 .brand {
@@ -112,12 +107,7 @@ body {
   width: 80%;
   max-width: 80vw;
   margin-top: clamp(120px, 4vh, 20px);
-<<<<<<< HEAD
   font-size: 20px;
-  font-size: 20px;
-=======
-  font-size: clamp(0.85rem, 1.4vw, 1.1rem);
->>>>>>> parent of 123285c (v2)
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: #fff;
