@@ -10,6 +10,7 @@ let c1 = "#E0592A";
 let c2 = "#006432";
 let leftShift = 3;
 let rightShift = -3;
+let lastStepIndex = -1;
 
 let stripe = stripeTarget;
 let halfStripe = stripe / 2;
@@ -185,6 +186,12 @@ function setup() {
 function draw() {
   clear();
   const stepIndex = Math.floor(millis() / stepMs);
+  if (stepIndex !== lastStepIndex) {
+    lastStepIndex = stepIndex;
+    window.dispatchEvent(
+      new CustomEvent("border-step", { detail: { stepIndex } })
+    );
+  }
   const phase = stepIndex * (stripe * stepFraction);
   drawStripes(phase);
   erase();

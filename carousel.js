@@ -161,6 +161,6 @@ if (aapPath) {
   };
 
   window.addEventListener("pointermove", updatePointer);
+  window.addEventListener("border-step", updateEyes);
   updateEyes();
-  setInterval(updateEyes, 500);
 }
