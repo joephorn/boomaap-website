@@ -106,7 +106,7 @@ body {
   gap: 12px;
   width: 80%;
   max-width: 80vw;
-  margin-top: clamp(120px, 4vh, 20px);
+  margin-top: clamp(40px, 3vh, 36px);
   font-size: 20px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -138,8 +138,7 @@ body {
   background: var(--hover-image) center / contain no-repeat;
   opacity: 0;
   transform: translate(-50%, -10px);
-  transition: opacity 160ms ease, transform 160ms ease;
-  transition: opacity 160ms ease, transform 160ms ease;
+  transition: none;
   pointer-events: none;
 }
 
@@ -175,6 +174,15 @@ body {
   .carousel__logo {
     width: min(70vw, 60vh);
     max-height: 42vh;
+  }
+
+  .contact {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .contact__dot {
+    display: none;
   }
 }
 
