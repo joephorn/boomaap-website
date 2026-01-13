@@ -5,8 +5,8 @@
 }
 
 :root {
-  --color-1: #FFC314;
-  --color-2: #00412D;
+  --color-1: #E0592A;
+  --color-2: #006432;
 }
 
 html,
@@ -17,7 +17,7 @@ body {
 }
 
 body {
-  background: #f9f2e7;
+  background: #000;
   overflow: hidden;
   font-family: "BeckerEgyptian", "Times New Roman", serif;
 }
@@ -53,16 +53,50 @@ body {
 }
 
 .carousel__layer.is-active {
-  opacity: 1;
+  opacity: 0.8;
 }
 
-.carousel__logo {
-  width: min(40vw, 60vh);
+.brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(8px, 1.6vh, 18px);
+  --logo-width: min(46vw, 66vh);
+  --aap-size: 11%;
+  --aap-left: 54.5%;
+  --aap-top: 63%;
+  width: var(--logo-width);
+}
+
+.brand__slogan {
+  width: 60%;
+  max-width: 100%;
   height: auto;
-  aspect-ratio: 510.24 / 347.68;
-  max-height: 45vh;
-  fill: var(--color-1);
+  display: block;
+  position: relative;
+  top: 10px;
   filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.25));
+}
+
+.brand__logo {
+  position: relative;
+  width: 100%;
+}
+
+.brand__logo-base {
+  width: 100%;
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.25));
+}
+
+.brand__logo-aap {
+  position: absolute;
+  width: var(--aap-size);
+  height: auto;
+  left: var(--aap-left);
+  top: var(--aap-top);
+  transform: translate(-50%, -50%);
 }
 
 .contact {
@@ -73,10 +107,10 @@ body {
   width: 80%;
   max-width: 80vw;
   margin-top: clamp(120px, 4vh, 20px);
-  font-size: clamp(0.85rem, 1.4vw, 1.1rem);
+  font-size: 20px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--color-1);
+  color: #fff;
   pointer-events: auto;
   text-align: center;
 }
@@ -104,7 +138,6 @@ body {
   background: var(--hover-image) center / contain no-repeat;
   opacity: 0;
   transform: translate(-50%, -10px);
-  transition: opacity 160ms ease, transform 160ms ease;
   pointer-events: none;
 }
 
@@ -123,7 +156,7 @@ body {
 }
 
 .contact__link--boomaap {
-  --hover-image: url("assets/hover-boomaap.svg");
+  --hover-image: url("assets/hover-dannyallards.svg");
 }
 
 .contact__link:focus-visible {
@@ -137,9 +170,18 @@ body {
 }
 
 @media (max-width: 700px) {
-  .carousel__logo {
-    width: min(70vw, 60vh);
-    max-height: 42vh;
+  .brand {
+    --logo-width: min(78vw, 66vh);
+  }
+
+  .contact {
+    flex-direction: column;
+    gap: 8px;
+    font-size: 24px;
+  }
+
+  .contact__dot {
+    display: none;
   }
 }
 
@@ -147,10 +189,6 @@ body {
   .carousel__overlay {
     transform: translateY(2vh);
     gap: clamp(10px, 2vh, 18px);
-  }
-
-  .carousel__logo {
-    max-height: 36vh;
   }
 }
 

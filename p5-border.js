@@ -6,8 +6,8 @@ let depthMin = 2;
 let depthMax = 6;
 let segmentMin = 20;
 let segmentMax = 80;
-let c1 = "#00412D";
-let c2 = "#FFC314";
+let c1 = "#E0592A";
+let c2 = "#006432";
 let leftShift = 3;
 let rightShift = -3;
 
@@ -15,6 +15,17 @@ let stripe = stripeTarget;
 let halfStripe = stripe / 2;
 let band = border + depthMax;
 let jagged = null;
+
+const readCssColor = (name, fallback) => {
+  const rootStyles = getComputedStyle(document.documentElement);
+  const value = rootStyles.getPropertyValue(name).trim();
+  return value || fallback;
+};
+
+const updateColors = () => {
+  c1 = readCssColor("--color-1", c1);
+  c2 = readCssColor("--color-2", c2);
+};
 
 const buildEdge = (length, startDepth, endDepth) => {
   const points = [];
@@ -155,6 +166,7 @@ const drawMask = () => {
 };
 
 const recalc = () => {
+  updateColors();
   updateStripe();
   jagged = generateJagged();
 };
