@@ -149,6 +149,7 @@ body {
   opacity: 0;
   transform: translate(-50%, -10px);
   transition: opacity 160ms ease, transform 160ms ease;
+  transition: opacity 160ms ease, transform 160ms ease;
   pointer-events: none;
 }
 
