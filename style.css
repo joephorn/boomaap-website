@@ -49,7 +49,7 @@ body {
   background-position: center;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 180ms ease;
+  transition: none;
 }
 
 .carousel__layer.is-active {
@@ -170,7 +170,7 @@ body {
   line-height: 1;
 }
 
-@media (max-width: 700px) {
+@media (max-width: 700px), (hover: none) and (pointer: coarse) {
   .carousel__logo {
     width: min(70vw, 60vh);
     max-height: 42vh;
