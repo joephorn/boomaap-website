@@ -1,12 +1,11 @@
 @font-face {
   font-family: "BeckerEgyptian";
   src: url("assets/BeckerGothics-Egyptian.ttf") format("truetype");
-  font-display: swap;
 }
 
 :root {
-  --color-1: #E0592A;
-  --color-2: #006432;
+  --c1: #E0592A;
+  --c2: #006432;
 }
 
 html,
@@ -156,11 +155,6 @@ body {
 
 .contact__link--boomaap {
   --hover-image: url("assets/hover-dannyallards.svg");
-}
-
-.contact__link:focus-visible {
-  outline: 2px solid var(--color-1);
-  outline-offset: 4px;
 }
 
 .contact__dot {

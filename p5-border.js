@@ -6,8 +6,6 @@ let depthMin = 2;
 let depthMax = 6;
 let segmentMin = 20;
 let segmentMax = 80;
-let c1 = "#E0592A";
-let c2 = "#006432";
 let leftShift = 3;
 let rightShift = -3;
 let lastStepIndex = -1;
@@ -24,8 +22,8 @@ const readCssColor = (name, fallback) => {
 };
 
 const updateColors = () => {
-  c1 = readCssColor("--color-1", c1);
-  c2 = readCssColor("--color-2", c2);
+  c1 = readCssColor("--c1");
+  c2 = readCssColor("--c2");
 };
 
 const buildEdge = (length, startDepth, endDepth) => {
@@ -179,7 +177,7 @@ function setup() {
     canvas.parent(parent);
   }
   noStroke();
-  frameRate(30);
+  frameRate(2);
   recalc();
 }
 
