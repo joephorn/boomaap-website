@@ -15,10 +15,10 @@ let halfStripe = stripe / 2;
 let band = border + depthMax;
 let jagged = null;
 
-const readCssColor = (name, fallback) => {
+const readCssColor = (name) => {
   const rootStyles = getComputedStyle(document.documentElement);
   const value = rootStyles.getPropertyValue(name).trim();
-  return value || fallback;
+  return value;
 };
 
 const updateColors = () => {
